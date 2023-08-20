@@ -1,0 +1,292 @@
+*** General ***
+owner    = owner
+contact  = example.com
+mailhost = mail.example.com
+sendmail = /usr/sbin/sendmail
+# NOTE: do not put the Image Cache below cgi-bin
+# since all files under cgi-bin will be executed ... this is not
+# good for images.
+imgcache = /usr/local/smokeping/cache
+#imgurl   = https://localhost/cache
+imgurl = cache
+datadir  = /usr/local/smokeping/data
+piddir  = /usr/local/smokeping/var
+cgiurl   = https://localhost/bin/smokeping_cgi
+smokemail = /usr/local/smokeping/etc/smokemail
+tmail = /usr/local/smokeping/etc/tmail
+
+# specify this to get syslog logging
+syslogfacility = local0
+# each probe is now run in its own process
+# disable this to revert to the old behaviour
+# concurrentprobes = no
+
+*** Alerts ***
+to = exmaple.com
+from = example.com
+
++someloss
+type = loss
+
+# in percent
+pattern = >0%,*12*,>0%,*12*,>0%
+#pattern = >20%,>20%
+comment = loss 3 times  in a row
+
++rttdetect
+type = rtt
+ #in milli seconds
+pattern = <10,<10,<10,<10,<10,<100,>100,>100,>100
+edgetrigger = yes
+comment = routing messed up again ?
+
++lossdetect
+type = loss
+# in percent
+pattern = ==0%,==0%,==0%,==0%,>20%,>20%,>20%
+edgetrigger = yes
+comment = suddenly there is packet loss
+
++miniloss
+type = loss
+# in percent
+pattern = >0%,*12*,>0%,*12*,>0%
+edgetrigger = yes
+#pattern = >0%,*12*
+comment = detected loss 1 times over the last two hours
+
+#+rttdetect
+#type = rtt
+# in milliseconds
+#pattern = <1,<1,<1,<1,<1,<2,>2,>2,>2
+#comment = routing messed up again ?
+
++rttbad
+type = rtt
+# in milliseconds
+edgetrigger = yes
+pattern = ==S,>20
+comment = route
+
++rttbadstart
+type = rtt
+# in milliseconds
+edgetrigger = yes
+pattern = ==S,==U
+comment = offline at startup
+
+
+*** Database ***
+# In 300 sec, ping 20 number of times
+step     = 60
+pings    = 60  
+
+# consfn mrhb steps total
+AVERAGE  0.5   1  1008
+AVERAGE  0.5  12  4320
+    MIN  0.5  12  4320
+    MAX  0.5  12  4320
+AVERAGE  0.5 144   720
+    MAX  0.5 144   720
+    MIN  0.5 144   720
+
+*** Presentation ***
+template = /usr/local/smokeping/etc/basepage.html
+charset = utf-8
++ charts
+menu = Charts
+title = The most interesting destinations
+
+++ stddev	
+sorter = StdDev(entries=>4)
+title = Top Standard Deviation
+menu = Std Deviation
+format = Standard Deviation %f
+
+++ max
+sorter = Max(entries=>5)
+title = Top Max Roundtrip Time
+menu = by Max
+format = Max Roundtrip Time %f seconds
+
+++ loss
+sorter = Loss(entries=>5)
+title = Top Packet Loss
+menu = Loss
+format = Packets Lost %f
+
+++ median
+sorter = Median(entries=>5)
+title = Top Median Roundtrip Time
+menu = by Median
+format = Median RTT %f seconds
+
++ overview 
+width = 600
+height = 50
+range = 10h
+
++ detail
+width = 600
+height = 200
+unison_tolerance = 2
+"Last 3 Hours"    3h
+"Last 30 Hours"   30h
+"Last 10 Days"    10d
+"Last 400 Days"   400d
+
+*** Probes ***
++ FPing
+binary = /usr/sbin/fping
+
++ TCPPing
+binary = /usr/bin/tcpping
+forks = 5
+offset = 50%
+step = 300
+timeout = 15
+
+*** Slaves ***
+secrets=/usr/local/smokeping/etc/smokeping_secrets
++boomer
+display_name=boomer
+color=0000ff
+
++slave2
+display_name=another
+color=00ff00
+
+*** Targets ***
+probe = FPing
+menu = Top
+title = Network Latency Grapher (ICMP pings)
+remark = This SmokePing website of JoyBomb Company. 
+         
++ DNS
+  menu = DNS伺服器
+  title = 台灣遠傳 
+ 
+++ TW-Hinet
+  menu = 中華電信(168.95.1.1)
+  title = 中華電信(168.95.1.1)
+  host = 168.95.1.1
+
+++ TW-Fet
+  menu = 遠傳電信(139.175.1.244)
+  title = 遠傳電信(139.175.1.244)
+  host = 139.175.1.244
+
+++ TW-TTN
+  menu = 台灣固網(61.31.1.1)
+  title = 台灣固網(61.31.1.1)
+  host = 61.31.1.1
+
+++ Singapro-1
+  menu = 新加坡(202.136.163.11)
+  title = 新加坡(202.136.163.11)
+  host = 202.136.163.11
+
+++ Singapro-2
+  menu = 新加坡(203.116.1.78)
+  title = 新加坡(203.116.1.78)
+  host = 203.116.1.78
+
+++ CloudFlare-1
+  menu = CloudFlare(1.1.1.1)
+  title = CloudFlare(1.1.1.1)
+  host = 1.1.1.1
+
+++ CloudFlare-2
+  menu = CloudFlare(1.0.0.1)
+  title = CloudFlare(1.0.0.1)
+  host = 1.0.0.1
+
+++ Google-1
+   menu = Google(8.8.8.8)
+   title = Google(8.8.8.8)
+   host = 8.8.8.8
+
+++ Google-2
+   menu = Google(8.8.4.4)
+   title = Google(8.8.4.4)
+   host = 8.8.4.4
+
+++ China
+   menu = China(1.2.4.8)
+   title = China(1.2.4.8)
+   host = 1.2.4.8
+
+++ Hongkong-1
+   menu = 香港(203.80.96.10)
+   title = 香港(203.80.96.10)
+   host = 203.80.96.10
+
+++ Hongkong-2
+   menu = 香港(203.80.96.9)
+   title = 香港(203.80.96.9)
+   host = 203.80.96.9
+
+++ Macao-1
+   menu = 澳門(202.175.3.8)
+   title = 澳門(202.175.3.8)
+   host = 202.175.3.8
+
+++ Macao-2
+   menu = 澳門(202.175.3.3)
+   title = 澳門(202.175.3.3)
+   host = 202.175.3.3
+
+++ Japan-KDDI
+   menu = 日本(202.12.27.33)
+   title = 日本(202.12.27.33)
+   host = 202.12.27.33
+
+++ Japan-DOCOMO
+   menu = 日本(202.229.32.1)
+   title = 日本(202.229.32.1)
+   host = 202.229.32.1
+
+++ Korea-NICT
+   menu = 韓國(164.124.101.31)
+   title = 韓國(164.124.101.31)
+   host = 164.124.101.31
+
+++ Korea-KT
+   menu = 韓國(203.248.240.31)
+   title = 韓國(203.248.240.31)
+   host = 203.248.240.31
+
+++ Malaysian-Digi
+   menu = 馬來西亞(115.164.2.18)
+   title = 馬來西亞-Digi(115.164.2.18)
+   host = 115.164.2.18
+
+++ Malaysian-Celcom
+   menu = 馬來西亞(203.82.70.5)
+   title = 馬來西亞-Celcom(203.82.70.5)
+   host = 203.82.70.5
+
+++ Malaysian-Maxis
+   menu = 馬來西亞(58.71.136.7)
+   title = 馬來西亞-Maxis(58.71.136.7)
+   host = 58.71.136.7
+
+++ Thailand-AIS
+   menu = 泰國(203.146.237.1)
+   title = 泰國(203.146.237.1)
+   host = 203.146.237.1
+
+++ Vietnam-VNPT
+   menu = 越南(222.255.121.146)
+   title = 越南(222.255.121.146)
+   host = 222.255.121.146
+
+++ GT_DNS1
+   menu = 亞太DNS1
+   title = 亞太DNS1
+   host = 210.200.211.225
+
+++ GT_DNS2
+   menu = 亞太DNS2
+   title = 亞太DNS2
+   host = 210.200.211.193
